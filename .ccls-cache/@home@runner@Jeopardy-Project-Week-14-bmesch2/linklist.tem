@@ -1,0 +1,281 @@
+//Brandon mesch
+//11/05/2023
+//Julie Shneider , Comp Sci 2
+//Link List
+// Summary: Template definitions for link list class
+
+#include "linklist.h"
+#include "record.h"
+#include <iostream>
+#include <fstream>
+#include <ostream>
+#include <random>
+#include <chrono>
+
+
+
+
+template<typename T>
+LinkList<T>::LinkList(const LinkList<T>& other) : head(nullptr), tail(nullptr), size(0) {
+
+  head = tail = nullptr;
+
+  Node<T>* temp = other.head;
+  while(temp != nullptr)
+  {
+    append(temp->val);
+    temp = temp->next;  
+  }
+}
+
+template<typename T>
+LinkList<T>::~LinkList() { free(); }
+
+//ALLOCATION REGION
+template<typename T>
+void LinkList<T>::free() {
+  while(removeFirst())
+  {}
+}
+
+template<typename T>
+Node<T>* LinkList<T>::alloc(T data) { return new Node<T>(data); }
+//REGION END
+
+//INSERTION/REVERSE REGION
+template<typename T>
+void LinkList<T>::append(T val) {
+    Node<T> * node = alloc(val);
+
+    if(tail == nullptr)
+    {
+      head = tail = node;
+    }
+    else
+    {
+      tail->next = node;
+      tail = node;
+    }
+
+    ++size;
+  }
+
+template<typename T>
+void LinkList<T>::prepend(T val) {
+  if(isEmpty())
+    {
+      head = alloc(val);  
+      ++size;
+      return;
+    }
+
+    Node<T> * node = alloc(val);
+    node->next = head;
+    head = node;
+
+  ++size;
+}
+
+template<typename T>
+bool LinkList<T>::removeFirst() {
+   if(isEmpty())
+    {
+      return false;
+    }
+
+    Node<T> * node = head;
+    head = head->next;
+
+    if(head == tail)
+    {
+      head = nullptr;
+      tail = nullptr;
+      --size;
+      delete node;
+      return true;
+    }
+
+    --size;
+    delete node;
+    return true;
+}
+
+template<typename T>
+bool LinkList<T>::remove(T data)
+{
+  Node<T>*temp = head;
+  Node<T>*last = nullptr;
+  while(temp != nullptr)
+  {
+    if(temp->val == data)
+    {
+      last->next = temp->next;
+      --size;
+      return true;
+    }
+    temp = temp->next;
+  }
+
+  return false;
+}
+
+//END REGION
+
+//HELPERS REGION
+template<typename T>
+bool LinkList<T>::isEmpty() { return head == nullptr; }
+
+template<typename T>
+void LinkList<T>::printAll() {
+  Node<T>*temp = head;
+  while (temp != nullptr) 
+  {
+    std::cout << "Node Value: " << temp->val << std::endl;
+    temp = temp->next;
+  }
+
+  std::cout << std::endl;
+}
+
+// template<typename T>
+// Node<T>* LinkList<T>::find(T data) 
+// {
+//   Node<T>*temp = head;
+//   while (temp != nullptr) {
+//     if (temp->val == data) {
+//       delete temp;
+//       return node;
+//     }
+//     temp = temp->next;
+//   }
+//   delete  temp;
+//   return nullptr;
+// }
+
+template<typename T>
+T LinkList<T>::at(int index)
+{
+  if(index < 0 || index > size)
+  {
+    throw std::out_of_range("Index out of range");
+  }
+
+  Node<T>*temp = head;
+  int counter = 1;
+  while(temp != nullptr)
+  {
+    if(counter == index)
+    {
+      return T(temp->val); 
+    }
+    temp = temp->next;
+    ++counter;
+  }
+
+  return T();
+}
+
+template<typename T>
+T LinkList<T>::getRandomData(){
+  if(size <= 0)
+  {
+    return T();
+  }
+
+  std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+
+  // Set up the distribution to generate numbers between 0 and size - 1
+  std::uniform_int_distribution<std::size_t> dist(1, size - 1);
+
+  int index = dist(rng);
+  return at(index);
+}
+
+template<typename T>
+bool LinkList<T>::findByData(T data){
+
+  Node<T>*temp = head;
+  while(temp != nullptr)
+  {
+    if(temp->val == data)
+    {
+      return true;
+    }
+    temp = temp->next;
+  }
+
+  return false;
+}
+
+template<typename T>
+int LinkList<T>::getSize() const{
+  return size;
+}
+//END REGION
+
+
+//FILE REGION
+template<typename T>
+bool LinkList<T>::writeFile(const std::string& fileName) const
+{
+  std::ofstream outFile(fileName);
+  if(!outFile)
+  {
+    return false;
+  }
+
+  Node<T>* temp = head;
+  while(temp != nullptr)
+  {
+    outFile << temp->val << std::endl;
+    temp = temp->next;
+  }
+
+  return true;
+}
+
+template<typename T>
+bool LinkList<T>::readFile(const std::string& fileName)
+{
+std::ifstream inFile(fileName);
+  if(!inFile)
+  {
+    return false;
+  }
+
+
+  T val;
+
+  while(inFile >> val)
+  {
+    append(val);      
+  }
+
+  return true;
+}
+
+// END REGION
+
+
+template<typename T>
+LinkList<T>& LinkList<T>::operator=(const LinkList<T>& other)
+{
+  if(this->head != other.head)
+  {
+    free();
+    head = tail = nullptr;
+
+    Node<T> * temp = other.head;
+    while(temp != nullptr)
+    {
+      append(temp->val);
+      temp = temp->next;
+    }
+  }
+  return *this;
+}
+
+
+
+
+

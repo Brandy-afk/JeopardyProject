@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>Taylor Swift</title>
+<script type = 'text/javascript'>
+function askQuestion(cell) {
+	cell.style.backgroundColor = "#000000";
+}
+function showDiv() {
+	var x = document.getElementById("ANS");
+	if (x.style.display === "none") {
+		x.style.display = "block";
+	}
+	else {
+		x.style.display = "none";
+	}
+}
+</script></head>
+<body bgColor='#FFFFFF'>
+<h2 align="center">CATEGORY: Taylor Swift</h2>
+<h3 align="center">Question: Where did Taylor Swift recieve her doctorate?</h3>
+<p align="center">Click <a onclick = "showDiv();return false">HERE</a> to Show/Hide answer</p>
+<div id="ANS" style="display: none;" align="center">Answer: NYU</div>
+<p align="center"><a href="#" onclick="history.go(-1)">Go Back</a></p>
+
+</body>
+</html>

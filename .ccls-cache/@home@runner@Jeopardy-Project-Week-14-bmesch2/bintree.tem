@@ -1,0 +1,146 @@
+
+
+#include "bintree.h"
+#include <iostream>
+#include <ostream>
+#include <fstream>
+//CONSTRUCTORS
+
+
+template<typename T>
+BinTree<T>::BinTree(const BinTree<T>& source)
+{
+  root = copyTree(source.root);
+}
+
+
+//END REGION
+
+//REGION FUNCTIONS
+template<typename T>
+void BinTree<T>::free(BinNode<T>* root)
+{
+  if(root == nullptr)
+  {
+    return;
+  }
+
+  free(root->left);
+  free(root->right);
+  delete root; 
+}
+
+template<typename T>
+void BinTree<T>::inOrderTraverse(BinNode<T>* root, process action, int catagoryID)
+{
+  if(root != nullptr && action != nullptr)
+  {
+   inOrderTraverse(root->left, action, catagoryID);
+    action(root->val, catagoryID, ++counter);
+   inOrderTraverse(root->right, action, catagoryID);
+  }
+}
+
+template<typename T>
+void BinTree<T>::inOrder(process action, int value)
+{
+  counter = 0;
+  inOrderTraverse(root, action, value);
+}
+
+template<typename T>
+bool BinTree<T>::isEmpty()
+{
+  return root == nullptr;
+}
+
+
+template<typename T>
+BinNode<T>* BinTree<T>::addRecursive(BinNode<T>* node ,T value)
+{
+if(node == nullptr)
+{
+  return new BinNode<T>(value);
+}
+  if(value < node->val)
+  {
+    node->left = addRecursive(node->left, value);
+  }
+  else if(value > node->val)
+  {
+    node->right = addRecursive(node->right, value);
+  }
+
+  return node;
+}
+
+template<typename T>
+BinNode<T>* BinTree<T>::copyTree(const BinNode<T>* root)
+{
+  if(root == nullptr){
+    return nullptr;
+  }
+
+  BinNode<T>* newNode = new BinNode<T>(root->val);
+
+  newNode->left = copyTree(root->left);
+  newNode->right = copyTree(root->right);
+
+  return newNode;
+}
+
+template<typename T>
+BinTree<T>& BinTree<T>::operator=(const BinTree<T>& other)
+{
+  free(root);
+  root = copyTree(other.root);
+  return *this;
+}
+
+//FILE REGION
+template<typename T>
+bool BinTree<T>::writeFile(const std::string& fileName) const
+{
+  std::ofstream outFile(fileName);
+  if(!outFile)
+  {
+    return false;
+  }
+
+  writeRecursive(outFile, root);
+  return true;
+}
+
+template<typename T>
+void BinTree<T>::writeRecursive(std::ofstream& stream, BinNode<T>* node) const
+{
+  if(node != nullptr)
+  {
+    writeRecursive(stream, node->left);
+    stream << node->val << std::endl;
+    writeRecursive(stream, node->right);
+  }
+}
+
+template<typename T>
+bool BinTree<T>::readFile(const std::string& fileName)
+{
+std::ifstream inFile(fileName);
+  if(!inFile)
+  {
+    return false;
+  }
+
+
+  T val;
+
+  while(inFile >> val)
+  {
+    add(val);      
+  }
+
+  return true;
+}
+
+
+// #REGIONEND
